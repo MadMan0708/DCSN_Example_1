@@ -1,0 +1,4 @@
+Project-Name: TestProject
+Project-Priority: 7
+Main-Comp-Class: with.comput.clazz.ComputationClassExample
+Main-Commander-Class: with.commander.CommanderImpl

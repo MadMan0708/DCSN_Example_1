@@ -1,0 +1,60 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package with.comput.clazz;
+
+import last.Empty;
+import cz.cuni.mff.bc.api.main.ITask;
+import java.io.BufferedInputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Arrays;
+
+/**
+ *
+ * @author Aku
+ */
+public class ComputationClassExample implements ITask {
+    
+    Integer[] data;
+    
+    @Override
+    public void loadData(Path nameOfTheFile) {
+        // class in different package, demonstration that on location of classes really doesn't matter
+        // only think which has to be in manifest is location of class which implements ITask interface
+        // and location of commander class.
+        // Each class can have arbitrary name
+        Empty empty = new Empty();
+        ArrayList<Integer> numbers = new ArrayList<>();
+        try (DataInputStream dis = new DataInputStream(new BufferedInputStream(new FileInputStream(nameOfTheFile.toFile())))) {
+            
+            while (dis.available() != 0) {
+                numbers.add(dis.readInt());
+            }
+            data = (Integer[]) numbers.toArray(new Integer[numbers.size()]);
+        } catch (IOException e) {
+        }
+    }
+    
+    @Override
+    public void calculate() {
+        Arrays.sort(data);
+    }
+    
+    @Override
+    public void saveData(Path nameOfTheFile) {
+        
+        try (DataOutputStream dos = new DataOutputStream(new FileOutputStream(nameOfTheFile.toFile()))) {
+            for (int i = 0; i < data.length; i++) {
+                dos.writeInt(data[i]);
+            }
+        } catch (IOException e) {
+        }
+    }
+}
