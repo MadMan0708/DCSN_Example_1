@@ -4,11 +4,11 @@
  */
 package with.commander;
 
-import cz.cuni.mff.bc.api.main.ClientAPI;
-import cz.cuni.mff.bc.api.main.ClientAPIWithLog;
+import cz.cuni.mff.bc.api.main.StandartRemoteProvider;
 import cz.cuni.mff.bc.api.main.Commander;
 import cz.cuni.mff.bc.api.main.CustomIO;
 import cz.cuni.mff.bc.api.main.JarAPI;
+import cz.cuni.mff.bc.api.main.RemoteProvider;
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -18,7 +18,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Random;
 import java.util.logging.Level;
@@ -30,8 +29,8 @@ import java.util.logging.Logger;
  */
 public class CommanderImpl extends Commander {
 
-    private ClientAPIWithLog apiWithLog;
-    private ClientAPI apiWithoutLog;
+    private StandartRemoteProvider apiWithLog;
+    private RemoteProvider apiWithoutLog;
     private static final Logger LOG = Logger.getLogger(Commander.class.getName());
     private String projectName;
 
@@ -124,9 +123,9 @@ public class CommanderImpl extends Commander {
     }
 
     @Override
-    public void start(ClientAPIWithLog apiWithLog) {
+    public void start(StandartRemoteProvider apiWithLog) {
         this.apiWithLog = apiWithLog;
-        apiWithoutLog = apiWithLog.getClientAPI();
+        apiWithoutLog = apiWithLog.getRemoteProvider();
         LOG.addHandler(apiWithLog.getLogHandler());
         try {
             projectName = JarAPI.getAttributeFromManifest(apiWithLog.getCurrentJarPath(), "Project-Name");
@@ -142,6 +141,7 @@ public class CommanderImpl extends Commander {
             while (!apiWithoutLog.isProjectReadyForDownload(projectName)) {
                 try {
                     Thread.sleep(1000);
+                    apiWithLog.printProjectInfo(projectName);
                 } catch (InterruptedException e) {
                     LOG.info("Interrupted during waiting for project to be complete");
                 }
