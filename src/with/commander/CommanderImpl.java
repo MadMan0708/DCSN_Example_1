@@ -28,12 +28,12 @@ import java.util.logging.Logger;
  * @author Jakub
  */
 public class CommanderImpl extends Commander {
-
-    private StandartRemoteProvider apiWithLog;
-    private RemoteProvider apiWithoutLog;
+    
+    private static StandartRemoteProvider apiWithLog;
+    private static RemoteProvider apiWithoutLog;
     private static final Logger LOG = Logger.getLogger(Commander.class.getName());
     private String projectName;
-
+    
     private static File createBigFile() throws IOException {
         File tmp = File.createTempFile("velky_balik_dat", ".txt");
         try (DataOutputStream dos = new DataOutputStream(new FileOutputStream(tmp))) {
@@ -80,18 +80,18 @@ public class CommanderImpl extends Commander {
             readerArray[index] = new DataInputStream(new FileInputStream(filePaths[index]));
         }
         boolean[] closedReaderFlag = new boolean[readerArray.length];
-
+        
         PrintWriter writer = new PrintWriter(output);
         int currentReaderIndex = -1;
         DataInputStream currentReader = null;
         int currentInt;
         while (getNumberReaderClosed(closedReaderFlag) < readerArray.length) {
             currentReaderIndex = (currentReaderIndex + 1) % readerArray.length;
-
+            
             if (closedReaderFlag[currentReaderIndex]) {
                 continue;
             }
-
+            
             currentReader = readerArray[currentReaderIndex];
             if (currentReader.available() == 0) {
                 currentReader.close();
@@ -109,9 +109,9 @@ public class CommanderImpl extends Commander {
             }
         }
         return output;
-
+        
     }
-
+    
     private static int getNumberReaderClosed(boolean[] closedReaderFlag) {
         int count = 0;
         for (boolean currentFlag : closedReaderFlag) {
@@ -121,19 +121,20 @@ public class CommanderImpl extends Commander {
         }
         return count;
     }
-
+    
     @Override
     public void start(StandartRemoteProvider apiWithLog) {
+        LOG.setParent(apiWithLog.getLogger());
         this.apiWithLog = apiWithLog;
         apiWithoutLog = apiWithLog.getRemoteProvider();
-        LOG.addHandler(apiWithLog.getLogHandler());
         try {
             projectName = JarAPI.getAttributeFromManifest(apiWithLog.getCurrentJarPath(), "Project-Name");
             File velkyBalik = createBigFile();
             LOG.log(Level.INFO, "Obrovsky soubor vytvoren");
             File tmpDir = splitFileToNFiles(velkyBalik, 10);
             LOG.log(Level.INFO, "Obrovsky soubor rozdelen");
-            File zipped = File.createTempFile("data", ".zip");
+            //File zipped = File.createTempFile("data", ".zip");
+            File zipped = new File(apiWithLog.getStandartDownloadDir().toFile(), "data.zip");
             CustomIO.zipFiles(zipped, tmpDir.listFiles());
             LOG.log(Level.INFO, "Data zabalena do zip archivu");
             apiWithLog.uploadProject(apiWithLog.getCurrentJarPath(), zipped.toPath());
@@ -153,7 +154,7 @@ public class CommanderImpl extends Commander {
             File poVypoctuDir = Files.createTempDirectory("_poVypoctyDir").toFile();
             CustomIO.extractZipFile(poVypoctu, poVypoctuDir);
             LOG.log(Level.INFO, "Vypoctena data rozbalena");
-            File finalni = new File(Paths.get("").toFile(), "finalni.txt");
+            File finalni = new File(apiWithLog.getStandartDownloadDir().toFile(), "Vysledek.txt");
             mergeFiles(poVypoctuDir.listFiles(), finalni);
             LOG.log(Level.INFO, "Finalni soubor je na adrese: {0}", finalni.getAbsolutePath());
         } catch (IOException e) {
