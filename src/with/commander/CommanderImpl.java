@@ -154,7 +154,7 @@ public class CommanderImpl extends Commander {
             File poVypoctuDir = Files.createTempDirectory("_poVypoctyDir").toFile();
             CustomIO.extractZipFile(poVypoctu, poVypoctuDir);
             LOG.log(Level.INFO, "Vypoctena data rozbalena");
-            File finalni = new File(apiWithLog.getStandartDownloadDir().toFile(), "Vysledek.txt");
+            File finalni = new File(apiWithLog.getStandartDownloadDir().toFile(), projectName+".txt");
             mergeFiles(poVypoctuDir.listFiles(), finalni);
             LOG.log(Level.INFO, "Finalni soubor je na adrese: {0}", finalni.getAbsolutePath());
         } catch (IOException e) {
