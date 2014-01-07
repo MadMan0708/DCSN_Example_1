@@ -1,4 +1,7 @@
 Project-Name: TestProject
 Project-Priority: 7
+Cores-Per-Task: 2
+Memory-Per-Task: 50
+Time-Per-Task: 2
 Main-Comp-Class: with.comput.clazz.ComputationClassExample
 Main-Commander-Class: with.commander.CommanderImpl
