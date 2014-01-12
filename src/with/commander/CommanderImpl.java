@@ -4,11 +4,11 @@
  */
 package with.commander;
 
-import cz.cuni.mff.bc.api.main.StandartRemoteProvider;
 import cz.cuni.mff.bc.api.main.Commander;
 import cz.cuni.mff.bc.api.main.CustomIO;
 import cz.cuni.mff.bc.api.main.JarAPI;
 import cz.cuni.mff.bc.api.main.RemoteProvider;
+import cz.cuni.mff.bc.api.main.StandardRemoteProvider;
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -18,7 +18,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -29,7 +28,7 @@ import java.util.logging.Logger;
  */
 public class CommanderImpl extends Commander {
     
-    private static StandartRemoteProvider apiWithLog;
+    private static StandardRemoteProvider apiWithLog;
     private static RemoteProvider apiWithoutLog;
     private static final Logger LOG = Logger.getLogger(Commander.class.getName());
     private String projectName;
@@ -123,7 +122,7 @@ public class CommanderImpl extends Commander {
     }
     
     @Override
-    public void start(StandartRemoteProvider apiWithLog) {
+    public void start(StandardRemoteProvider apiWithLog) {
         LOG.setParent(apiWithLog.getLogger());
         this.apiWithLog = apiWithLog;
         apiWithoutLog = apiWithLog.getRemoteProvider();
