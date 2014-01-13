@@ -30,6 +30,7 @@ public class ComputationClassExample implements ITask {
         // only think which has to be in manifest is location of class which implements ITask interface
         // and location of commander class.
         // Each class can have arbitrary name
+        
         Empty empty = new Empty();
         ArrayList<Integer> numbers = new ArrayList<>();
         try (DataInputStream dis = new DataInputStream(new BufferedInputStream(new FileInputStream(nameOfTheFile.toFile())))) {
