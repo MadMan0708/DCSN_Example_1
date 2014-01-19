@@ -27,12 +27,12 @@ import java.util.logging.Logger;
  * @author Jakub
  */
 public class CommanderImpl extends Commander {
-    
+
     private static StandardRemoteProvider apiWithLog;
     private static RemoteProvider apiWithoutLog;
     private static final Logger LOG = Logger.getLogger(Commander.class.getName());
     private String projectName;
-    
+
     private static File createBigFile() throws IOException {
         File tmp = File.createTempFile("velky_balik_dat", ".txt");
         try (DataOutputStream dos = new DataOutputStream(new FileOutputStream(tmp))) {
@@ -79,18 +79,18 @@ public class CommanderImpl extends Commander {
             readerArray[index] = new DataInputStream(new FileInputStream(filePaths[index]));
         }
         boolean[] closedReaderFlag = new boolean[readerArray.length];
-        
+
         PrintWriter writer = new PrintWriter(output);
         int currentReaderIndex = -1;
         DataInputStream currentReader = null;
         int currentInt;
         while (getNumberReaderClosed(closedReaderFlag) < readerArray.length) {
             currentReaderIndex = (currentReaderIndex + 1) % readerArray.length;
-            
+
             if (closedReaderFlag[currentReaderIndex]) {
                 continue;
             }
-            
+
             currentReader = readerArray[currentReaderIndex];
             if (currentReader.available() == 0) {
                 currentReader.close();
@@ -108,9 +108,9 @@ public class CommanderImpl extends Commander {
             }
         }
         return output;
-        
+
     }
-    
+
     private static int getNumberReaderClosed(boolean[] closedReaderFlag) {
         int count = 0;
         for (boolean currentFlag : closedReaderFlag) {
@@ -120,7 +120,7 @@ public class CommanderImpl extends Commander {
         }
         return count;
     }
-    
+
     @Override
     public void start(StandardRemoteProvider apiWithLog) {
         LOG.setParent(apiWithLog.getLogger());
@@ -148,12 +148,12 @@ public class CommanderImpl extends Commander {
             }
             LOG.log(Level.INFO, "Vypocet dokoncen");
             File poVypoctu = File.createTempFile("poVypoctu", ".zip");
-            apiWithLog.download(projectName, poVypoctu);
+            apiWithLog.download(projectName, poVypoctu.toPath());
             LOG.log(Level.INFO, "Vypoctena data stazena ze serveru");
             File poVypoctuDir = Files.createTempDirectory("_poVypoctyDir").toFile();
             CustomIO.extractZipFile(poVypoctu, poVypoctuDir);
             LOG.log(Level.INFO, "Vypoctena data rozbalena");
-            File finalni = new File(apiWithLog.getStandartDownloadDir().toFile(), projectName+".txt");
+            File finalni = new File(apiWithLog.getStandartDownloadDir().toFile(), projectName + ".txt");
             mergeFiles(poVypoctuDir.listFiles(), finalni);
             LOG.log(Level.INFO, "Finalni soubor je na adrese: {0}", finalni.getAbsolutePath());
         } catch (IOException e) {
