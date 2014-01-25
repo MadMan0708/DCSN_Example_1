@@ -2,11 +2,11 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package with.commander;
+package cz.cuni.mff.test.commander;
 
 import cz.cuni.mff.bc.api.main.Commander;
 import cz.cuni.mff.bc.api.main.CustomIO;
-import cz.cuni.mff.bc.api.main.JarAPI;
+import cz.cuni.mff.bc.api.main.JarTools;
 import cz.cuni.mff.bc.api.main.RemoteProvider;
 import cz.cuni.mff.bc.api.main.StandardRemoteProvider;
 import java.io.BufferedInputStream;
@@ -127,7 +127,7 @@ public class CommanderImpl extends Commander {
         this.apiWithLog = apiWithLog;
         apiWithoutLog = apiWithLog.getRemoteProvider();
         try {
-            projectName = JarAPI.getAttributeFromManifest(apiWithLog.getCurrentJarPath(), "Project-Name");
+            projectName = JarTools.getAttributeFromManifest(apiWithLog.getCurrentJarPath(), "Project-Name");
             File velkyBalik = createBigFile();
             LOG.log(Level.INFO, "Obrovsky soubor vytvoren");
             File tmpDir = splitFileToNFiles(velkyBalik, 10);
