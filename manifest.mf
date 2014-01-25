@@ -3,5 +3,5 @@ Project-Priority: 5
 Cores-Per-Task: 2
 Memory-Per-Task: 50
 Time-Per-Task: 10
-Main-Comp-Class: cz.cuni.mff.test.commander.ComputationClassExample
-Main-Commander-Class: cz.cuni.mff.test.comp.CommanderImpl
+Main-Comp-Class: cz.cuni.mff.test.comp.CommanderImpl
+Main-Commander-Class: cz.cuni.mff.test.commander.ComputationClassExample
