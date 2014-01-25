@@ -1,7 +1,7 @@
-Project-Name: ProjectA
-Project-Priority: 5
-Cores-Per-Task: 2
-Memory-Per-Task: 50
-Time-Per-Task: 10
+Project-Name: ProjectF
+Project-Priority: 7
+Cores-Per-Task: 1
+Memory-Per-Task: 20
+Time-Per-Task: 3
 Main-Comp-Class: cz.cuni.mff.test.comp.ComputationClassExample
 Main-Commander-Class: cz.cuni.mff.test.commander.CommanderImpl

@@ -22,7 +22,7 @@ import java.util.Arrays;
 public class ComputationClassExample implements ITask {
 
     Integer[] data;
-    long timeout = 600000;
+    long timeout = 180000;
 
     @Override
     public void loadData(Path nameOfTheFile) {
