@@ -43,7 +43,7 @@ public class ComputationClassExample implements ITask {
     public void calculate() {
         Arrays.sort(data);
         try {
-            this.wait(timeout);
+            this.wait(timeout); // wait to make task look like they last for {timeout} miliseconds
         } catch (InterruptedException e) {
         }
 
