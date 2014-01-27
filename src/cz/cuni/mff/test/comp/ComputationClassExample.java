@@ -17,7 +17,7 @@ import java.util.Arrays;
 
 /**
  *
- * @author Aku
+ * @author Jakub Hava
  */
 public class ComputationClassExample implements ITask {
 
@@ -26,8 +26,6 @@ public class ComputationClassExample implements ITask {
 
     @Override
     public void loadData(Path nameOfTheFile) {
-        // Each class can have arbitrary name
-
         ArrayList<Integer> numbers = new ArrayList<>();
         try (DataInputStream dis = new DataInputStream(new BufferedInputStream(new FileInputStream(nameOfTheFile.toFile())))) {
 

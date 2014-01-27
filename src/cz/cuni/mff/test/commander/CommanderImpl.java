@@ -23,18 +23,18 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * Commander class implementation
  *
- * @author Jakub
+ * @author Jakub Hava
  */
 public class CommanderImpl extends Commander {
 
-    private static StandardRemoteProvider apiWithLog;
     private static RemoteProvider apiWithoutLog;
     private static final Logger LOG = Logger.getLogger(Commander.class.getName());
     private String projectName;
 
     private static File createBigFile() throws IOException {
-        File tmp = File.createTempFile("velky_balik_dat", ".txt");
+        File tmp = File.createTempFile("big_data_file", ".txt");
         try (DataOutputStream dos = new DataOutputStream(new FileOutputStream(tmp))) {
             Random rand = new Random();
             for (int k = 0; k < 4; k++) {
@@ -43,14 +43,14 @@ public class CommanderImpl extends Commander {
                 }
             }
         } catch (IOException e) {
-            throw new IOException("Obrovsky soubor nemohl byt vytvoren", e);
+            throw new IOException("Data file coulnd't be created", e);
         }
         return tmp;
     }
 
-    // rozdeli soubor bigFile na n souboru
+    // splits the bigFile to n files
     private File splitFileToNFiles(File bigFile, int n) throws IOException {
-        File tmpDir = Files.createTempDirectory("rozdelene_soubory").toFile();
+        File tmpDir = Files.createTempDirectory("splited_files").toFile();
         long averageLength = bigFile.length() / (long) n;
         long avTemp;
         try (DataInputStream dis = new DataInputStream(new BufferedInputStream(new FileInputStream(bigFile)))) {
@@ -72,7 +72,7 @@ public class CommanderImpl extends Commander {
         }
     }
 
-    //slouceni
+    //merging
     private File mergeFiles(File[] filePaths, File output) throws IOException {
         DataInputStream[] readerArray = new DataInputStream[filePaths.length];
         for (int index = 0; index < readerArray.length; index++) {
@@ -124,40 +124,38 @@ public class CommanderImpl extends Commander {
     @Override
     public void start(StandardRemoteProvider apiWithLog) {
         LOG.setParent(apiWithLog.getLogger());
-        this.apiWithLog = apiWithLog;
         apiWithoutLog = apiWithLog.getRemoteProvider();
         try {
             projectName = JarTools.getAttributeFromManifest(apiWithLog.getCurrentJarPath(), "Project-Name");
-            File velkyBalik = createBigFile();
-            LOG.log(Level.INFO, "Obrovsky soubor vytvoren");
-            File tmpDir = splitFileToNFiles(velkyBalik, 10);
-            LOG.log(Level.INFO, "Obrovsky soubor rozdelen");
-            //File zipped = File.createTempFile("data", ".zip");
+            File bigFile = createBigFile();
+            LOG.log(Level.INFO, "Big data file created");
+            File tmpDir = splitFileToNFiles(bigFile, 10);
+            LOG.log(Level.INFO, "Big data file splitted");
             File zipped = new File(apiWithLog.getStandartDownloadDir().toFile(), "data.zip");
             CustomIO.zipFiles(zipped, tmpDir.listFiles());
-            LOG.log(Level.INFO, "Data zabalena do zip archivu");
+            LOG.log(Level.INFO, "Data packed into the zip archive");
             apiWithLog.uploadProject(apiWithLog.getCurrentJarPath(), zipped.toPath());
-            LOG.log(Level.INFO, "Data odeslana na server");
+            LOG.log(Level.INFO, "Data sent to the server");
             while (!apiWithoutLog.isProjectReadyForDownload(projectName)) {
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(5000); // check each 5 seconds
                     apiWithLog.printProjectInfo(projectName);
                 } catch (InterruptedException e) {
                     LOG.info("Interrupted during waiting for project to be complete");
                 }
             }
-            LOG.log(Level.INFO, "Vypocet dokoncen");
-            File poVypoctu = File.createTempFile("poVypoctu", ".zip");
-            apiWithLog.download(projectName, poVypoctu.toPath());
-            LOG.log(Level.INFO, "Vypoctena data stazena ze serveru");
-            File poVypoctuDir = Files.createTempDirectory("_poVypoctyDir").toFile();
-            CustomIO.extractZipFile(poVypoctu, poVypoctuDir);
-            LOG.log(Level.INFO, "Vypoctena data rozbalena");
-            File finalni = new File(apiWithLog.getStandartDownloadDir().toFile(), projectName + ".txt");
-            mergeFiles(poVypoctuDir.listFiles(), finalni);
-            LOG.log(Level.INFO, "Finalni soubor je na adrese: {0}", finalni.getAbsolutePath());
+            LOG.log(Level.INFO, "Task computation finished");
+            File download = File.createTempFile("afterComp", ".zip");
+            apiWithLog.download(projectName, download.toPath());
+            LOG.log(Level.INFO, "Data downloaded from the server");
+            File extractionDir = Files.createTempDirectory("extractionDir").toFile();
+            CustomIO.extractZipFile(download, extractionDir);
+            LOG.log(Level.INFO, "Data unpacked");
+            File output = new File(apiWithLog.getStandartDownloadDir().toFile(), projectName + ".txt");
+            mergeFiles(extractionDir.listFiles(), output);
+            LOG.log(Level.INFO, "Output file is located at : {0}", output.getAbsolutePath());
         } catch (IOException e) {
-            LOG.log(Level.WARNING, "Chyba: {0}", e.getMessage());
+            LOG.log(Level.WARNING, "Error: {0}", e.getMessage());
         }
     }
 }
