@@ -49,10 +49,9 @@ public class ComputationClassExample implements ITask {
 
     @Override
     public void saveData(Path nameOfTheFile) {
-
         try (DataOutputStream dos = new DataOutputStream(new FileOutputStream(nameOfTheFile.toFile()))) {
-            for (int i = 0; i < data.length; i++) {
-                dos.writeInt(data[i]);
+            for (Integer number : data) {
+                dos.writeInt(number);
             }
         } catch (IOException e) {
         }
